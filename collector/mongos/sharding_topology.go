@@ -246,8 +246,9 @@ func GetShardingTopoStatus(client *mongo.Client) *ShardingTopoStats {
 	results := &ShardingTopoStats{}
 
 	results.Shards = GetShards(client)
-	results.TotalChunks = GetTotalChunks(client)
-	results.ShardChunks = GetTotalChunksByShard(client)
+	// Don't fetch these for the Bugsnag cluster as it takes to long
+	//results.TotalChunks = GetTotalChunks(client)
+	//results.ShardChunks = GetTotalChunksByShard(client)
 	results.TotalDatabases = GetTotalDatabases(client)
 	results.TotalCollections = GetTotalShardedCollections(client)
 

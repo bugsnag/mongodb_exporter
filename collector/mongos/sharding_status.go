@@ -229,7 +229,8 @@ func (status *ShardingStats) Describe(ch chan<- *prometheus.Desc) {
 func GetShardingStatus(client *mongo.Client) *ShardingStats {
 	results := &ShardingStats{}
 
-	results.IsBalanced = IsClusterBalanced(client)
+	// Don't check this for the Bugsnag cluster as it takes to long
+	//results.IsBalanced = IsClusterBalanced(client)
 	results.BalancerEnabled = IsBalancerEnabled(client)
 	results.Changelog = GetShardingChangelogStatus(client)
 	results.Topology = GetShardingTopoStatus(client)
