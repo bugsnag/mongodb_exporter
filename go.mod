@@ -8,7 +8,7 @@ go 1.17
 replace github.com/prometheus/client_golang v1.12.2 => github.com/Percona-Lab/client_golang v1.12.2-0.20220701073455-ee06569fd6a5
 
 require (
-	github.com/AlekSi/pointer v1.1.0
+	github.com/AlekSi/pointer v1.2.0
 	github.com/alecthomas/kong v0.6.1
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/percona/exporter_shared v0.7.4-0.20211108113423-8555cdbac68b
