@@ -29,7 +29,7 @@ import (
 	"github.com/percona/mongodb_exporter/internal/tu"
 )
 
-func TestReplsetStatusCollector(t *testing.T) {
+func TestServerStatusDataCollector(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -37,41 +37,24 @@ func TestReplsetStatusCollector(t *testing.T) {
 
 	ti := labelsGetterMock{}
 
-	c := newReplicationSetStatusCollector(ctx, client, logrus.New(), false, ti)
+	c := newServerStatusCollector(ctx, client, logrus.New(), false, ti)
 
 	// The last \n at the end of this string is important
 	expected := strings.NewReader(`
-	# HELP mongodb_rs_myState replSetGetStatus.
-	# TYPE mongodb_rs_myState untyped
-	mongodb_rs_myState 1
-	# HELP mongodb_rs_ok replSetGetStatus.
-	# TYPE mongodb_rs_ok untyped
-	mongodb_rs_ok 1` + "\n")
+	# HELP mongodb_ss_mem_bits serverStatus.mem.
+	# TYPE mongodb_ss_mem_bits untyped
+	mongodb_ss_mem_bits 64
+	# HELP mongodb_ss_metrics_commands_connPoolSync_failed serverStatus.metrics.commands.connPoolSync.
+	# TYPE mongodb_ss_metrics_commands_connPoolSync_failed untyped
+	mongodb_ss_metrics_commands_connPoolSync_failed 0` + "\n")
 	// Filter metrics for 2 reasons:
 	// 1. The result is huge
 	// 2. We need to check against know values. Don't use metrics that return counters like uptime
 	//    or counters like the number of transactions because they won't return a known value to compare
 	filter := []string{
-		"mongodb_rs_myState",
-		"mongodb_rs_ok",
+		"mongodb_ss_mem_bits",
+		"mongodb_ss_metrics_commands_connPoolSync_failed",
 	}
 	err := testutil.CollectAndCompare(c, expected, filter...)
 	assert.NoError(t, err)
-}
-
-func TestReplsetStatusCollectorNoSharding(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	client := tu.TestClient(ctx, tu.MongoDBStandAlonePort, t)
-
-	ti := labelsGetterMock{}
-
-	c := newReplicationSetStatusCollector(ctx, client, logrus.New(), false, ti)
-
-	// Replication set metrics should not be generated for unsharded server
-	count := testutil.CollectAndCount(c)
-
-	metaMetricCount := 1
-	assert.Equal(t, metaMetricCount, count, "Mismatch in metric count for collector run on unsharded server")
 }

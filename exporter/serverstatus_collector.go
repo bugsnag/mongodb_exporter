@@ -25,12 +25,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const (
-	replicationNotEnabled        = 76
-	replicationNotYetInitialized = 94
-)
-
-type replSetGetStatusCollector struct {
+type serverStatusCollector struct {
 	ctx  context.Context
 	base *baseCollector
 
@@ -38,53 +33,53 @@ type replSetGetStatusCollector struct {
 	topologyInfo   labelsGetter
 }
 
-// newReplicationSetStatusCollector creates a collector for statistics on replication set.
-func newReplicationSetStatusCollector(ctx context.Context, client *mongo.Client, logger *logrus.Logger, compatible bool, topology labelsGetter) *replSetGetStatusCollector {
-	return &replSetGetStatusCollector{
-		ctx:  ctx,
-		base: newBaseCollector(client, logger),
-
+// newServerStatusCollector creates a collector for statistics on server status.
+func newServerStatusCollector(ctx context.Context, client *mongo.Client, logger *logrus.Logger, compatible bool, topology labelsGetter) *serverStatusCollector {
+	return &serverStatusCollector{
+		ctx:            ctx,
+		base:           newBaseCollector(client, logger),
 		compatibleMode: compatible,
 		topologyInfo:   topology,
 	}
 }
 
-func (d *replSetGetStatusCollector) Describe(ch chan<- *prometheus.Desc) {
+func (d *serverStatusCollector) Describe(ch chan<- *prometheus.Desc) {
 	d.base.Describe(d.ctx, ch, d.collect)
 }
 
-func (d *replSetGetStatusCollector) Collect(ch chan<- prometheus.Metric) {
+func (d *serverStatusCollector) Collect(ch chan<- prometheus.Metric) {
 	d.base.Collect(ch)
 }
 
-func (d *replSetGetStatusCollector) collect(ch chan<- prometheus.Metric) {
-	defer prometheus.MeasureCollectTime(ch, "mongodb", "replset_status")()
+func (d *serverStatusCollector) collect(ch chan<- prometheus.Metric) {
+	defer prometheus.MeasureCollectTime(ch, "mongodb", "serverstatus")()
 
 	logger := d.base.logger
 	client := d.base.client
 
-	cmd := bson.D{{Key: "replSetGetStatus", Value: "1"}}
+	cmd := bson.D{
+		{
+			Key: "serverStatus", Value: "1",
+		},
+		{
+			Key: "metrics", Value: bson.M{
+				// TODO: PMM-9568 : Add support to handle histogram metrics
+				"query": bson.M{"multiPlanner": bson.M{"histograms": false}},
+			},
+		},
+	}
 	res := client.Database("admin").RunCommand(d.ctx, cmd)
 
 	var m bson.M
-
 	if err := res.Decode(&m); err != nil {
-		if e, ok := err.(mongo.CommandError); ok {
-			if e.Code == replicationNotYetInitialized || e.Code == replicationNotEnabled {
-				return
-			}
-		}
-		logger.Errorf("cannot get replSetGetStatus: %s", err)
-
+		ch <- prometheus.NewInvalidMetric(prometheus.NewInvalidDesc(err), err)
 		return
 	}
 
-	logger.Debug("replSetGetStatus result:")
+	logger.Debug("serverStatus result:")
 	debugResult(logger, m)
 
-	for _, metric := range makeMetrics("", bson.M{"replSetGetStatus": m}, d.topologyInfo.baseLabels(), d.compatibleMode) {
+	for _, metric := range makeMetrics("", bson.M{"serverStatus": m}, d.topologyInfo.baseLabels(), d.compatibleMode) {
 		ch <- metric
 	}
 }
-
-var _ prometheus.Collector = (*replSetGetStatusCollector)(nil)
