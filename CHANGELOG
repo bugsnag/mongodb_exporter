@@ -3,6 +3,7 @@ Release 0.34.0-bugsnag1
 - Fix panics from attempts to use nil client
 - Use direct connection for tests connecting to rs1
 - Restore server status collector
+- Add support for timestamp metrics
 
 Release 0.34.0
 
