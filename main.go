@@ -47,6 +47,7 @@ type GlobalFlags struct {
 
 	EnableDiagnosticData   bool `name:"collector.diagnosticdata" help:"Enable collecting metrics from getDiagnosticData"`
 	EnableReplicasetStatus bool `name:"collector.replicasetstatus" help:"Enable collecting metrics from replSetGetStatus"`
+	EnableServerStatus     bool `name:"collector.serverstatus" help:"Enable collecting metrics from serverStatus"`
 	EnableDBStats          bool `name:"collector.dbstats" help:"Enable collecting metrics from dbStats"`
 	EnableTopMetrics       bool `name:"collector.topmetrics" help:"Enable collecting metrics from top admin command"`
 	EnableIndexStats       bool `name:"collector.indexstats" help:"Enable collecting metrics from $indexStats"`
@@ -125,6 +126,7 @@ func buildExporter(opts GlobalFlags) *exporter.Exporter {
 
 		EnableDiagnosticData:   opts.EnableDiagnosticData,
 		EnableReplicasetStatus: opts.EnableReplicasetStatus,
+		EnableServerStatus:     opts.EnableServerStatus,
 		EnableTopMetrics:       opts.EnableTopMetrics,
 		EnableDBStats:          opts.EnableDBStats,
 		EnableIndexStats:       opts.EnableIndexStats,
