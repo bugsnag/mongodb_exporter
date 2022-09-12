@@ -1,3 +1,9 @@
+Release 0.34.0-bugsnag1
+
+- Fix panics from attempts to use nil client
+- Use direct connection for tests connecting to rs1
+- Restore server status collector
+
 Release 0.34.0
 
 - Add logger with level
