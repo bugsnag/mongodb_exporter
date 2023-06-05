@@ -20,7 +20,7 @@ require (
 	github.com/prometheus/exporter-toolkit v0.7.1
 	github.com/shirou/gopsutil v3.21.8+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.4
 	go.mongodb.org/mongo-driver v1.10.1
 )
 
