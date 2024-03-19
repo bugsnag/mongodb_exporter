@@ -84,7 +84,7 @@ FILES = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 format:                     ## Format source code.
 	go mod tidy
 	bin/gofumpt -l -w $(FILES)
-	bin/gci write --Section Standard --Section Default --Section "Prefix(github.com/percona/mongodb_exporter)" .
+	bin/gci write --section Standard --section Default --section "Prefix(github.com/percona/mongodb_exporter)" .
 
 check:                      ## Run checks/linters
 	bin/golangci-lint run
@@ -104,7 +104,7 @@ test-race: env              ## Run all tests with race flag.
 	go test -race -v -timeout 30s ./...
 
 test-cluster: env           ## Starts MongoDB test cluster. Use env var TEST_MONGODB_IMAGE to set flavor and version. Example: TEST_MONGODB_IMAGE=mongo:3.6 make test-cluster
-	docker-compose up -d
+	docker compose up -d --wait
 
 test-cluster-clean: env     ## Stops MongoDB test cluster.
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
