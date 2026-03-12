@@ -1,3 +1,8 @@
+Release 0.41.0
+
+- Update Go version
+- Update dependencies
+
 Release 0.40.0-bugsnag1
 
 - Updated with upstream changes
