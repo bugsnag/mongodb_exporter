@@ -88,6 +88,22 @@ format:                     ## Format source code.
 
 check:                      ## Run checks/linters
 	bin/golangci-lint run
+	$(MAKE) check-sensitive-logs
+
+check-sensitive-logs:       ## Fail on potential cleartext URI logging.
+	@echo "Checking for potential cleartext URI logging..."
+	@matches=$$(grep -RInE --include='*.go' '(log\\.|logger\\.|e\\.logger\\.).*(Debugf|Infof|Warnf|Errorf).*(e\\.opts\\.URI|opts\\.URI|, *uri[,)]|, *URI[,)])' . || true); \
+	if [ -n "$$matches" ]; then \
+		echo "Potential sensitive URI logging found:"; \
+		echo "$$matches"; \
+		exit 1; \
+	fi
+	@matches=$$(grep -RInE --include='*.go' '(log\\.|logger\\.|e\\.logger\\.).*(Debug|Info|Warn|Error).*"uri"[[:space:]]*,[[:space:]]*([A-Za-z0-9_\\.]*URI|uri)[,)]' . || true); \
+	if [ -n "$$matches" ]; then \
+		echo "Potential sensitive URI structured logging found:"; \
+		echo "$$matches"; \
+		exit 1; \
+	fi
 
 check-license:              ## Check license in headers.
 	@go run .github/check-license.go
