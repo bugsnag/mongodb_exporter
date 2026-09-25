@@ -66,8 +66,9 @@ func TestConnect(t *testing.T) {
 	t.Run("Connect without SSL", func(t *testing.T) {
 		for name, port := range ports {
 			exporterOpts := &Opts{
-				URI:           fmt.Sprintf("mongodb://%s/admin", net.JoinHostPort(hostname, port)),
-				DirectConnect: true,
+				URI:              fmt.Sprintf("mongodb://%s/admin", net.JoinHostPort(hostname, port)),
+				DirectConnect:    true,
+				ConnectTimeoutMS: 1000,
 			}
 			client, err := connect(ctx, exporterOpts)
 			assert.NoError(t, err, name)
