@@ -30,6 +30,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/percona/mongodb_exporter/internal/tu"
 )
@@ -66,11 +67,12 @@ func TestConnect(t *testing.T) {
 	t.Run("Connect without SSL", func(t *testing.T) {
 		for name, port := range ports {
 			exporterOpts := &Opts{
-				URI:           fmt.Sprintf("mongodb://%s/admin", net.JoinHostPort(hostname, port)),
-				DirectConnect: true,
+				URI:              fmt.Sprintf("mongodb://%s/admin", net.JoinHostPort(hostname, port)),
+				DirectConnect:    true,
+				ConnectTimeoutMS: 1000,
 			}
 			client, err := connect(ctx, exporterOpts)
-			assert.NoError(t, err, name)
+			require.NoError(t, err, name)
 			err = client.Disconnect(ctx)
 			assert.NoError(t, err, name)
 		}

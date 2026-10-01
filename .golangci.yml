@@ -33,6 +33,15 @@ linters:
       - testpackage
       - wsl
       - exhaustivestruct
+      - exhaustruct
+      - inamedparam
+      - intrange
+      - perfsprint
+      - protogetter
+      - tagalign
+      - tagliatelle
+      - testifylint
+      - usetesting
       - varnamelen
       - maligned          #deprecated
       - scopelint         #deprecated
