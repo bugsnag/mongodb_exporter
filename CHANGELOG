@@ -1,7 +1,6 @@
-Release 0.42.0
+Release 0.40.0-bugsnag6
 
 - Update grpc version to 1.83.1
-- Update dependencies
 
 Release 0.40.0-bugsnag3
  
