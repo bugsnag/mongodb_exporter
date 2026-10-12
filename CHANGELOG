@@ -1,3 +1,7 @@
+Release 0.40.0-bugsnag7
+
+-  Remediate SCA findings in mongodb_exporter
+
 Release 0.40.0-bugsnag6
 
 - Update grpc version to 1.83.1
