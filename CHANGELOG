@@ -1,7 +1,11 @@
+
+Release 0.40.0-bugsnag8
+
+- Upgrade github.com/klauspost/compress to v1.18.7
+
 Release 0.40.0-bugsnag7
 
 -  Remediate SCA findings in mongodb_exporter
-
 Release 0.40.0-bugsnag6
 
 - Update grpc version to 1.83.1
